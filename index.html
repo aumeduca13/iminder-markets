@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Precios y cartera de práctica</title>
+  <style>
+    :root {
+      --bg: #f4f2ec;
+      --paper: #ffffff;
+      --text: #1a1a1a;
+      --muted: #5c5b56;
+      --line: #e4e0d6;
+      --fill: #f7f5f0;
+      --accent: #171717;
+      --accent-text: #ffffff;
+      --quiet: #eceae3;
+      --warning-bg: #fff6d4;
+      --warning-line: #e6c35c;
+      --warning-text: #5c4a10;
+      --success: #0b7a42;
+      --success-bg: #e6f6ec;
+      --danger: #b42318;
+      --danger-bg: #fdecea;
+      --chart: #1b6b9e;
+      --chart-fill: rgba(27, 107, 158, 0.16);
+      --radius: 12px;
+      --shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #121212;
+        --paper: #1c1c1c;
+        --text: #f3f3f0;
+        --muted: #b0aea6;
+        --line: #2e2e2e;
+        --fill: #242424;
+        --accent: #f3f3f0;
+        --accent-text: #171717;
+        --quiet: #2a2a2a;
+        --warning-bg: #3a3216;
+        --warning-line: #8a7428;
+        --warning-text: #f6e7a8;
+        --success: #5dcc8a;
+        --success-bg: #163522;
+        --danger: #f0a8a2;
+        --danger-bg: #3a1c1a;
+        --chart: #7cbcde;
+        --chart-fill: rgba(124, 188, 222, 0.18);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    main {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    h1 {
+      font-size: 1.85rem;
+      line-height: 1.2;
+      margin: 0 0 8px;
+    }
+    h2 {
+      font-size: 1.25rem;
+      margin: 0;
+    }
+    h3 {
+      font-size: 1.05rem;
+      margin: 0 0 12px;
+    }
+    p { margin: 0; }
+    .summary, .caption, .note, .footnote {
+      color: var(--muted);
+    }
+    .summary { font-size: 1.05rem; margin-bottom: 20px; }
+    .caption, .note, .footnote { font-size: 0.92rem; }
+    .banner {
+      background: var(--warning-bg);
+      border: 1px solid var(--warning-line);
+      color: var(--warning-text);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      margin: 0 0 32px;
+    }
+    .banner strong { display: block; margin-bottom: 4px; }
+    section {
+      margin: 0 0 40px;
+    }
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .caption { margin: 0 0 16px; }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .metric, .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+    .metric .value {
+      font-size: 1.35rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    .metric .label {
+      margin-top: 4px;
+      font-weight: 550;
+    }
+    .metric .detail {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-top: 2px;
+    }
+    .tone-success { color: var(--success); }
+    .tone-danger { color: var(--danger); }
+    .charts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .chart-wrap svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .chart-placeholder {
+      min-height: 180px;
+      display: flex;
+      align-items: center;
+      color: var(--muted);
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    label {
+      display: block;
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    input, select, button {
+      font: inherit;
+    }
+    input, select {
+      width: 100%;
+      height: 42px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      color: var(--text);
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    button {
+      height: 38px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      background: var(--quiet);
+      color: var(--text);
+    }
+    button:hover:not(:disabled) { filter: brightness(0.97); }
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+    button.primary {
+      background: var(--accent);
+      color: var(--accent-text);
+    }
+    .status {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .status.ok { background: var(--success-bg); color: var(--success); }
+    .status.warn { background: var(--warning-bg); color: var(--warning-text); }
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      background: var(--fill);
+    }
+    tr:last-child td { border-bottom: 0; }
+    td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    details { margin: 0; }
+    details > summary {
+      list-style: none;
+      cursor: pointer;
+    }
+    details > summary::-webkit-details-marker { display: none; }
+    .footnote { margin-top: 8px; }
+    @media (max-width: 860px) {
+      .metrics { grid-template-columns: 1fr 1fr; }
+      .charts, .form-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) {
+      .metrics { grid-template-columns: 1fr; }
+      main { padding: 24px 16px 48px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Precios y cartera de práctica</h1>
+      <p class="summary">Sigue Bitcoin, Solana y Take-Two, y practica compras y ventas con 1.000 € de dinero ficticio. Nada de esto es una inversión real.</p>
+    </header>
+
+    <aside class="banner" role="note">
+      <strong>Esto es dinero ficticio, para practicar</strong>
+      <p>Empiezas con 1.000 € virtuales. Puedes comprar y vender las veces que quieras, ver si ganas o pierdes, y reiniciar cuando te apetezca. No se mueve dinero de verdad y no puedes perder ni ganar nada real.</p>
+    </aside>
+
+    <section>
+      <div class="section-head">
+        <h2>Precios</h2>
+        <button type="button" id="btn-refresh">Actualizar</button>
+      </div>
+      <p class="caption" id="prices-caption"></p>
+      <div class="metrics" id="price-metrics"></div>
+      <p class="note" id="price-error" hidden></p>
+      <p class="note">El porcentaje de Bitcoin y Solana es el cambio de las últimas 24 horas en euros. El de Take-Two es el cambio de esa sesión en dólares, y no se actualiza solo.</p>
+    </section>
+
+    <section>
+      <h2>Los últimos 30 días</h2>
+      <p class="caption">Precio en euros, según CoinGecko. El gráfico ayuda a ver la tendencia, no a acertar el próximo movimiento.</p>
+      <p class="note" id="chart-error" hidden></p>
+      <div class="charts">
+        <article class="card">
+          <h3>Bitcoin (BTC)</h3>
+          <div id="btc-chart" class="chart-wrap"></div>
+        </article>
+        <article class="card">
+          <h3>Solana (SOL)</h3>
+          <div id="sol-chart" class="chart-wrap"></div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Tu cartera</h2>
+      <p class="caption">Empiezas con 1.000 € virtuales. El valor de lo que tienes se calcula con el precio actual (o el último conocido, en el caso de Take-Two).</p>
+      <div class="metrics" id="portfolio-metrics"></div>
+    </section>
+
+    <section>
+      <h2>Comprar o vender</h2>
+      <p class="caption">Escribe cuántos euros quieres gastar (al comprar) o recuperar (al vender). No hace falta comprar un bitcoin entero: con 50 € ya puedes practicar. En esta página también puedes comprar trozos de Take-Two.</p>
+      <div class="form-grid">
+        <div>
+          <label for="asset">Activo</label>
+          <select id="asset">
+            <option value="btc">Bitcoin (BTC)</option>
+            <option value="sol">Solana (SOL)</option>
+            <option value="ttwo">Take-Two (TTWO)</option>
+          </select>
+        </div>
+        <div>
+          <label for="amount">Cantidad en euros</label>
+          <input id="amount" type="text" inputmode="decimal" placeholder="Ejemplo: 50 o 25,50" value="50">
+        </div>
+      </div>
+      <div class="actions">
+        <button type="button" class="primary" id="btn-buy">Comprar</button>
+        <button type="button" id="btn-sell">Vender</button>
+      </div>
+      <p class="note" id="trade-message">Elige un activo, escribe una cantidad y pulsa Comprar o Vender. Tu cartera se guarda en este navegador.</p>
+    </section>
+
+    <section>
+      <h2>Lo que tienes</h2>
+      <p class="caption">El precio medio de compra es la media de lo que pagaste. La ganancia o pérdida compara ese precio con el de ahora.</p>
+      <div id="holdings"></div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Historial de operaciones</h2>
+        <button type="button" id="btn-reset">Reiniciar cartera</button>
+      </div>
+      <p class="caption">La columna de resultado solo aparece en las ventas: es lo que ganaste o perdiste respecto a tu precio medio de compra.</p>
+      <div id="history"></div>
+    </section>
+
+    <p class="footnote" id="footnote"></p>
+  </main>
+
+  <script>
+  "use strict";
+
+  var STORAGE_KEY = "ian-cartera-practica-v1";
+  var STARTING_CASH_EUR = 1000;
+  var REFRESH_MS = 45000;
+  var MADRID = "Europe/Madrid";
+
+  /**
+   * Take-Two no tiene una API pública sin clave que el navegador pueda leer
+   * (Yahoo y Nasdaq responden bien al servidor, pero no envían CORS).
+   * Precio consultado el 18 nov 2026, 20:22 (hora de Madrid / 14:22 ET),
+   * coincidente en Nasdaq y Yahoo Finance. Tipo USD/EUR de Frankfurter, 18 nov 2026.
+   */
+  var TTWO_SNAPSHOT = {
+    usd: 218.21,
+    eur: 198.9508,
+    changePct: 7.0,
+    asOfIso: "2026-11-18T20:22:00+01:00",
+    usdPerEur: 0.91174
+  };
+
+  var ASSET_NAME = { btc: "Bitcoin", sol: "Solana", ttwo: "Take-Two" };
+  var QTY_DIGITS = { btc: 6, sol: 4, ttwo: 4 };
+
+  var state = {
+    portfolio: newPortfolio(),
+    asset: "btc",
+    amountText: "50",
+    message: null,
+    messageTone: null,
+    confirmReset: false,
+    btc: null,
+    sol: null,
+    priceError: null,
+    pricesLoading: true,
+    btcChart: null,
+    solChart: null,
+    chartError: null
+  };
+
+  function emptyHoldings() {
+    return {
+      btc: { qty: 0, avgPriceEur: 0 },
+      sol: { qty: 0, avgPriceEur: 0 },
+      ttwo: { qty: 0, avgPriceEur: 0 }
+    };
+  }
+
+  function newPortfolio() {
+    return { cash: STARTING_CASH_EUR, holdings: emptyHoldings(), trades: [] };
+  }
+
+  function isAssetId(value) {
+    return value === "btc" || value === "sol" || value === "ttwo";
+  }
+
+  function isHolding(value) {
+    return Boolean(
+      value &&
+      typeof value === "object" &&
+      typeof value.qty === "number" &&
+      Number.isFinite(value.qty) &&
+      typeof value.avgPriceEur === "number" &&
+      Number.isFinite(value.avgPriceEur)
+    );
+  }
+
+  function loadPortfolio() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return newPortfolio();
+      var parsed = JSON.parse(raw);
+      if (typeof parsed.cash !== "number" || !Number.isFinite(parsed.cash)) {
+        return newPortfolio();
+      }
+      var holdings = emptyHoldings();
+      ["btc", "sol", "ttwo"].forEach(function (id) {
+        var row = parsed.holdings && parsed.holdings[id];
+        if (isHolding(row)) holdings[id] = row;
+      });
+      var trades = [];
+      if (Array.isArray(parsed.trades)) {
+        parsed.trades.forEach(function (item) {
+          if (!item || typeof item !== "object") return;
+          if (
+            typeof item.id === "string" &&
+            typeof item.at === "string" &&
+            (item.side === "compra" || item.side === "venta") &&
+            typeof item.asset === "string" &&
+            isAssetId(item.asset) &&
+            typeof item.qty === "number" &&
+            typeof item.priceEur === "number" &&
+            typeof item.amountEur === "number"
+          ) {
+            trades.push({
+              id: item.id,
+              at: item.at,
+              side: item.side,
+              asset: item.asset,
+              qty: item.qty,
+              priceEur: item.priceEur,
+              amountEur: item.amountEur,
+              realizedEur: typeof item.realizedEur === "number" ? item.realizedEur : undefined
+            });
+          }
+        });
+      }
+      return { cash: parsed.cash, holdings: holdings, trades: trades };
+    } catch (err) {
+      return newPortfolio();
+    }
+  }
+
+  function savePortfolio(portfolio) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(portfolio));
+    } catch (err) {
+      // El navegador puede bloquear localStorage; la página sigue en esta sesión.
+    }
+  }
+
+  function formatEur(value, digits) {
+    if (digits === undefined) digits = 2;
+    return value.toLocaleString("es-ES", {
+      style: "currency",
+      currency: "EUR",
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits
+    });
+  }
+
+  function formatUsd(value, digits) {
+    if (digits === undefined) digits = 2;
+    return value.toLocaleString("es-ES", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits
+    });
+  }
+
+  function formatQty(asset, qty) {
+    return qty.toLocaleString("es-ES", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: QTY_DIGITS[asset]
+    });
+  }
+
+  function formatPct(value) {
+    var sign = value > 0 ? "+" : "";
+    return (
+      sign +
+      value.toLocaleString("es-ES", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }) +
+      " %"
+    );
+  }
+
+  function formatMadrid(date, withYear) {
+    var options = {
+      timeZone: MADRID,
+      day: "numeric",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit"
+    };
+    if (withYear) options.year = "numeric";
+    return date.toLocaleString("es-ES", options);
+  }
+
+  function toneForChange(value) {
+    if (value > 0.05) return "success";
+    if (value < -0.05) return "danger";
+    return undefined;
+  }
+
+  function parseAmount(raw) {
+    var text = String(raw).trim().replace(/\s/g, "").replace(/€/g, "");
+    if (!text) return null;
+    if (text.indexOf(",") !== -1 && text.indexOf(".") !== -1) {
+      text = text.replace(/\./g, "").replace(",", ".");
+    } else if (text.indexOf(",") !== -1) {
+      text = text.replace(",", ".");
+    }
+    var value = Number(text);
+    if (!Number.isFinite(value) || value <= 0) return null;
+    return Math.round(value * 100) / 100;
+  }
+
+  function almostZero(value) {
+    return Math.abs(value) < 1e-10;
+  }
+
+  function axisRange(values) {
+    var min = Math.min.apply(null, values);
+    var max = Math.max.apply(null, values);
+    var pad = (max - min) * 0.08 || Math.abs(max) * 0.05 || 1;
+    return { floor: Math.max(0, min - pad), ceiling: max + pad };
+  }
+
+  function formatAxisEur(value) {
+    var digits = value >= 1000 ? 0 : 2;
+    return (
+      value.toLocaleString("es-ES", {
+        maximumFractionDigits: digits,
+        minimumFractionDigits: 0
+      }) + " €"
+    );
+  }
+
+  function ttwoQuote() {
+    return {
+      eur: TTWO_SNAPSHOT.eur,
+      usd: TTWO_SNAPSHOT.usd,
+      changePct: TTWO_SNAPSHOT.changePct,
+      live: false,
+      asOf: new Date(TTWO_SNAPSHOT.asOfIso)
+    };
+  }
+
+  function quotes() {
+    return { btc: state.btc, sol: state.sol, ttwo: ttwoQuote() };
+  }
+
+  function holdingsValue() {
+    var all = quotes();
+    var total = 0;
+    ["btc", "sol", "ttwo"].forEach(function (id) {
+      var price = all[id] && all[id].eur;
+      if (price) total += state.portfolio.holdings[id].qty * price;
+    });
+    return total;
+  }
+
+  async function fetchCryptoPrices() {
+    var response = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,solana&vs_currencies=eur,usd&include_24hr_change=true"
+    );
+    if (!response.ok) throw new Error("CoinGecko " + response.status);
+    var data = await response.json();
+    if (
+      typeof data.bitcoin !== "object" ||
+      typeof data.bitcoin.eur !== "number" ||
+      typeof data.bitcoin.usd !== "number" ||
+      typeof data.solana !== "object" ||
+      typeof data.solana.eur !== "number" ||
+      typeof data.solana.usd !== "number"
+    ) {
+      throw new Error("CoinGecko incompleto");
+    }
+    return {
+      btc: {
+        eur: data.bitcoin.eur,
+        usd: data.bitcoin.usd,
+        changePct: data.bitcoin.eur_24h_change || 0
+      },
+      sol: {
+        eur: data.solana.eur,
+        usd: data.solana.usd,
+        changePct: data.solana.eur_24h_change || 0
+      }
+    };
+  }
+
+  async function fetchChart(id) {
+    var response = await fetch(
+      "https://api.coingecko.com/api/v3/coins/" + id + "/market_chart?vs_currency=eur&days=30&interval=daily"
+    );
+    if (!response.ok) throw new Error("gráfico " + response.status);
+    var data = await response.json();
+    var prices = data.prices || [];
+    return prices.map(function (row) {
+      return {
+        label: new Date(row[0]).toLocaleDateString("es-ES", {
+          timeZone: MADRID,
+          day: "numeric",
+          month: "short"
+        }),
+        value: row[1]
+      };
+    });
+  }
+
+  async function loadPrices() {
+    try {
+      var result = await fetchCryptoPrices();
+      var now = new Date();
+      state.btc = { eur: result.btc.eur, usd: result.btc.usd, changePct: result.btc.changePct, live: true, asOf: now };
+      state.sol = { eur: result.sol.eur, usd: result.sol.usd, changePct: result.sol.changePct, live: true, asOf: now };
+      state.priceError = null;
+    } catch (err) {
+      state.priceError =
+        "No he podido actualizar Bitcoin y Solana. Si ya había precios, dejo los últimos que salieron bien. Prueba a pulsar Actualizar en un momento.";
+    } finally {
+      state.pricesLoading = false;
+      render();
+    }
+  }
+
+  async function loadCharts() {
+    try {
+      var results = await Promise.all([fetchChart("bitcoin"), fetchChart("solana")]);
+      state.btcChart = results[0].length ? results[0] : null;
+      state.solChart = results[1].length ? results[1] : null;
+      state.chartError = null;
+    } catch (err) {
+      state.chartError = "No he podido cargar los gráficos de 30 días.";
+    }
+    render();
+  }
+
+  function refreshPrices() {
+    state.pricesLoading = true;
+    render();
+    fetchCryptoPrices()
+      .then(function (result) {
+        var now = new Date();
+        state.btc = { eur: result.btc.eur, usd: result.btc.usd, changePct: result.btc.changePct, live: true, asOf: now };
+        state.sol = { eur: result.sol.eur, usd: result.sol.usd, changePct: result.sol.changePct, live: true, asOf: now };
+        state.priceError = null;
+      })
+      .catch(function () {
+        state.priceError = "No he podido actualizar Bitcoin y Solana. Prueba otra vez en un momento.";
+      })
+      .finally(function () {
+        state.pricesLoading = false;
+        render();
+      });
+  }
+
+  function trade(side) {
+    var amount = parseAmount(state.amountText);
+    var quote = quotes()[state.asset];
+    if (amount === null) {
+      state.messageTone = "error";
+      state.message = "Escribe una cantidad en euros, por ejemplo 50 o 25,50.";
+      render();
+      return;
+    }
+    if (!quote) {
+      state.messageTone = "error";
+      state.message = "Todavía no tengo el precio de ese activo. Espera un momento o pulsa Actualizar.";
+      render();
+      return;
+    }
+
+    var prev = state.portfolio;
+    var holding = prev.holdings[state.asset];
+
+    if (side === "compra") {
+      if (amount > prev.cash + 1e-9) {
+        state.messageTone = "error";
+        state.message = "Solo te quedan " + formatEur(prev.cash) + " de efectivo. Prueba una cantidad más pequeña.";
+        render();
+        return;
+      }
+      var buyQty = amount / quote.eur;
+      var nextQty = holding.qty + buyQty;
+      var nextAvg = (holding.qty * holding.avgPriceEur + amount) / nextQty;
+      var buyRow = {
+        id: Date.now() + "-" + Math.random().toString(16).slice(2),
+        at: new Date().toISOString(),
+        side: side,
+        asset: state.asset,
+        qty: buyQty,
+        priceEur: quote.eur,
+        amountEur: amount
+      };
+      var nextHoldingsBuy = Object.assign({}, prev.holdings);
+      nextHoldingsBuy[state.asset] = { qty: nextQty, avgPriceEur: nextAvg };
+      state.portfolio = {
+        cash: Math.round((prev.cash - amount) * 100) / 100,
+        holdings: nextHoldingsBuy,
+        trades: [buyRow].concat(prev.trades)
+      };
+      state.messageTone = "ok";
+      state.message =
+        "Has comprado " +
+        formatQty(state.asset, buyQty) +
+        " " +
+        ASSET_NAME[state.asset] +
+        " por " +
+        formatEur(amount) +
+        " (a " +
+        formatEur(quote.eur) +
+        " cada uno).";
+      state.confirmReset = false;
+      savePortfolio(state.portfolio);
+      render();
+      return;
+    }
+
+    var positionValue = holding.qty * quote.eur;
+    if (almostZero(holding.qty) || positionValue <= 0) {
+      state.messageTone = "error";
+      state.message = "No tienes " + ASSET_NAME[state.asset] + " para vender. Primero cómpralo.";
+      render();
+      return;
+    }
+    var sellAmount = Math.min(amount, Math.round(positionValue * 100) / 100);
+    var sellQty = sellAmount / quote.eur;
+    var remaining = holding.qty - sellQty;
+    var realizedEur = (quote.eur - holding.avgPriceEur) * sellQty;
+    var sellRow = {
+      id: Date.now() + "-" + Math.random().toString(16).slice(2),
+      at: new Date().toISOString(),
+      side: side,
+      asset: state.asset,
+      qty: sellQty,
+      priceEur: quote.eur,
+      amountEur: sellAmount,
+      realizedEur: realizedEur
+    };
+    var cleared = almostZero(remaining) || remaining < 0;
+    var nextHoldingsSell = Object.assign({}, prev.holdings);
+    nextHoldingsSell[state.asset] = cleared
+      ? { qty: 0, avgPriceEur: 0 }
+      : { qty: remaining, avgPriceEur: holding.avgPriceEur };
+    state.portfolio = {
+      cash: Math.round((prev.cash + sellAmount) * 100) / 100,
+      holdings: nextHoldingsSell,
+      trades: [sellRow].concat(prev.trades)
+    };
+    var soldAll = sellAmount + 0.005 >= positionValue;
+    state.messageTone = "ok";
+    state.message = soldAll
+      ? "Has vendido todo tu " + ASSET_NAME[state.asset] + " por " + formatEur(sellAmount) + "."
+      : "Has vendido " + formatQty(state.asset, sellQty) + " " + ASSET_NAME[state.asset] + " por " + formatEur(sellAmount) + ".";
+    state.confirmReset = false;
+    savePortfolio(state.portfolio);
+    render();
+  }
+
+  function resetPortfolio() {
+    if (!state.confirmReset) {
+      state.confirmReset = true;
+      state.messageTone = "error";
+      state.message = "Si pulsas otra vez en Reiniciar, se borra la cartera y vuelves a 1.000 €. Esta acción no se puede deshacer.";
+      render();
+      return;
+    }
+    state.portfolio = newPortfolio();
+    state.confirmReset = false;
+    state.amountText = "50";
+    state.messageTone = "ok";
+    state.message = "Cartera reiniciada. Vuelves a tener 1.000 € de efectivo ficticio.";
+    savePortfolio(state.portfolio);
+    render();
+  }
+
+  function el(id) {
+    return document.getElementById(id);
+  }
+
+  function metricCard(item) {
+    var toneClass = item.tone ? " tone-" + item.tone : "";
+    var html =
+      '<article class="metric">' +
+      '<div class="value">' +
+      escapeHtml(item.value) +
+      "</div>" +
+      '<div class="label">' +
+      escapeHtml(item.label) +
+      "</div>" +
+      '<div class="detail' +
+      toneClass +
+      '">' +
+      escapeHtml(item.detail) +
+      "</div>" +
+      "</article>";
+    return html;
+  }
+
+  function escapeHtml(text) {
+    return String(text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function toneClass(tone) {
+    if (tone === "success") return "tone-success";
+    if (tone === "danger") return "tone-danger";
+    return "";
+  }
+
+  function renderTable(headers, rows, align) {
+    var thead = headers
+      .map(function (header, index) {
+        var cls = align[index] === "end" ? ' class="num"' : "";
+        return "<th" + cls + ">" + escapeHtml(header) + "</th>";
+      })
+      .join("");
+    var body = rows
+      .map(function (row) {
+        var cells = row
+          .map(function (cell, index) {
+            var cls = align[index] === "end" ? ' class="num"' : "";
+            if (cell && typeof cell === "object") {
+              var extra = toneClass(cell.tone);
+              if (extra) cls = cls ? cls.slice(0, -1) + " " + extra + '"' : ' class="' + extra + '"';
+              return "<td" + cls + ">" + escapeHtml(cell.text) + "</td>";
+            }
+            return "<td" + cls + ">" + escapeHtml(cell) + "</td>";
+          })
+          .join("");
+        return "<tr>" + cells + "</tr>";
+      })
+      .join("");
+    return (
+      '<div class="table-wrap"><table><thead><tr>' +
+      thead +
+      "</tr></thead><tbody>" +
+      body +
+      "</tbody></table></div>"
+    );
+  }
+
+  function svgEl(name, attrs) {
+    var node = document.createElementNS("http://www.w3.org/2000/svg", name);
+    Object.keys(attrs || {}).forEach(function (key) {
+      node.setAttribute(key, attrs[key]);
+    });
+    return node;
+  }
+
+  function drawLineChart(container, points, emptyText) {
+    container.innerHTML = "";
+    if (!points || points.length < 2) {
+      var placeholder = document.createElement("p");
+      placeholder.className = "chart-placeholder";
+      placeholder.textContent = emptyText;
+      container.appendChild(placeholder);
+      return;
+    }
+
+    var values = points.map(function (point) { return point.value; });
+    var range = axisRange(values);
+    var width = 640;
+    var height = 280;
+    var padL = 72;
+    var padR = 16;
+    var padT = 16;
+    var padB = 36;
+    var plotW = width - padL - padR;
+    var plotH = height - padT - padB;
+    var xOf = function (i) {
+      return padL + (i / (points.length - 1)) * plotW;
+    };
+    var yOf = function (value) {
+      return padT + (1 - (value - range.floor) / (range.ceiling - range.floor)) * plotH;
+    };
+
+    var svg = svgEl("svg", {
+      viewBox: "0 0 " + width + " " + height,
+      role: "img",
+      "aria-label": "Gráfico de los últimos 30 días"
+    });
+
+    var ticks = [range.floor, (range.floor + range.ceiling) / 2, range.ceiling];
+    ticks.forEach(function (tick) {
+      var y = yOf(tick);
+      svg.appendChild(
+        svgEl("line", {
+          x1: String(padL),
+          x2: String(width - padR),
+          y1: String(y),
+          y2: String(y),
+          stroke: "currentColor",
+          "stroke-opacity": "0.18",
+          "stroke-width": "1"
+        })
+      );
+      var label = svgEl("text", {
+        x: String(padL - 8),
+        y: String(y + 4),
+        "text-anchor": "end",
+        fill: "currentColor",
+        "font-size": "11"
+      });
+      label.textContent = formatAxisEur(tick);
+      svg.appendChild(label);
+    });
+
+    var line = [];
+    var area = ["M " + xOf(0) + " " + yOf(range.floor)];
+    points.forEach(function (point, index) {
+      var x = xOf(index);
+      var y = yOf(point.value);
+      line.push((index === 0 ? "M " : "L ") + x + " " + y);
+      area.push("L " + x + " " + y);
+    });
+    area.push("L " + xOf(points.length - 1) + " " + yOf(range.floor) + " Z");
+
+    svg.appendChild(
+      svgEl("path", {
+        d: area.join(" "),
+        fill: "var(--chart-fill)",
+        stroke: "none"
+      })
+    );
+    svg.appendChild(
+      svgEl("path", {
+        d: line.join(" "),
+        fill: "none",
+        stroke: "var(--chart)",
+        "stroke-width": "2.5",
+        "stroke-linejoin": "round",
+        "stroke-linecap": "round"
+      })
+    );
+
+    var labelIndexes = [0];
+    var steps = Math.min(5, points.length - 1);
+    for (var i = 1; i < steps; i += 1) {
+      labelIndexes.push(Math.round((i * (points.length - 1)) / steps));
+    }
+    labelIndexes.push(points.length - 1);
+    var seen = {};
+    labelIndexes.forEach(function (index) {
+      if (seen[index]) return;
+      seen[index] = true;
+      var text = svgEl("text", {
+        x: String(xOf(index)),
+        y: String(height - 10),
+        "text-anchor": index === 0 ? "start" : index === points.length - 1 ? "end" : "middle",
+        fill: "currentColor",
+        "font-size": "11"
+      });
+      text.textContent = points[index].label;
+      svg.appendChild(text);
+    });
+
+    container.appendChild(svg);
+  }
+
+  function render() {
+    var all = quotes();
+    var invested = holdingsValue();
+    var totalValue = state.portfolio.cash + invested;
+    var profit = totalValue - STARTING_CASH_EUR;
+    var profitPct = (profit / STARTING_CASH_EUR) * 100;
+
+    var cryptoUpdated =
+      state.btc || state.sol
+        ? formatMadrid((state.btc || state.sol).asOf)
+        : state.pricesLoading
+          ? "cargando"
+          : "aún no";
+
+    el("prices-caption").textContent =
+      "Bitcoin y Solana se actualizan solos cada 45 segundos (CoinGecko), última lectura: " +
+      cryptoUpdated +
+      " (hora de Madrid). Take-Two no se puede leer en vivo desde el navegador: enseño el último precio que consulté el " +
+      formatMadrid(new Date(TTWO_SNAPSHOT.asOfIso), true) +
+      " (hora de Madrid), pasado a euros con el tipo de cambio de ese día.";
+
+    var priceItems = [
+      { key: "btc", label: "Bitcoin (BTC)", quote: state.btc },
+      { key: "sol", label: "Solana (SOL)", quote: state.sol },
+      { key: "ttwo", label: "Take-Two (TTWO)", quote: all.ttwo }
+    ].map(function (item) {
+      if (!item.quote) {
+        return {
+          value: state.pricesLoading ? "Cargando…" : "No disponible",
+          label: item.label,
+          detail: "Esperando el precio"
+        };
+      }
+      var liveNote = item.quote.live
+        ? "en vivo · " + formatMadrid(item.quote.asOf)
+        : "no es en vivo · " + formatMadrid(item.quote.asOf, true);
+      return {
+        value: formatEur(item.quote.eur),
+        label: item.label,
+        detail: formatUsd(item.quote.usd) + " · " + formatPct(item.quote.changePct) + " · " + liveNote,
+        tone: toneForChange(item.quote.changePct)
+      };
+    });
+    el("price-metrics").innerHTML = priceItems.map(metricCard).join("");
+
+    var priceError = el("price-error");
+    if (state.priceError) {
+      priceError.hidden = false;
+      priceError.textContent = state.priceError;
+    } else {
+      priceError.hidden = true;
+      priceError.textContent = "";
+    }
+
+    var chartError = el("chart-error");
+    if (state.chartError) {
+      chartError.hidden = false;
+      chartError.textContent = state.chartError;
+    } else {
+      chartError.hidden = true;
+      chartError.textContent = "";
+    }
+
+    drawLineChart(
+      el("btc-chart"),
+      state.btcChart,
+      state.chartError ? "El gráfico de Bitcoin no está disponible ahora." : "Cargando el gráfico de Bitcoin…"
+    );
+    drawLineChart(
+      el("sol-chart"),
+      state.solChart,
+      state.chartError ? "El gráfico de Solana no está disponible ahora." : "Cargando el gráfico de Solana…"
+    );
+
+    el("portfolio-metrics").innerHTML = [
+      { value: formatEur(state.portfolio.cash), label: "Efectivo", detail: "Lo que te queda para comprar" },
+      { value: formatEur(invested), label: "Inversiones", detail: "Lo que ya has comprado, a precio de ahora" },
+      { value: formatEur(totalValue), label: "Valor total", detail: "Efectivo + inversiones" },
+      {
+        value: formatEur(profit),
+        label: "Ganancia o pérdida",
+        detail: formatPct(profitPct) + " respecto a los 1.000 € iniciales",
+        tone: toneForChange(profit)
+      }
+    ]
+      .map(metricCard)
+      .join("");
+
+    var refresh = el("btn-refresh");
+    refresh.textContent = state.pricesLoading ? "Actualizando…" : "Actualizar";
+    refresh.disabled = state.pricesLoading;
+
+    el("asset").value = state.asset;
+    el("amount").value = state.amountText;
+    el("btn-reset").textContent = state.confirmReset ? "Sí, reiniciar" : "Reiniciar cartera";
+    el("btn-reset").className = state.confirmReset ? "primary" : "";
+
+    var messageEl = el("trade-message");
+    if (state.message) {
+      var badge =
+        state.messageTone === "ok"
+          ? '<span class="status ok">Hecho</span> '
+          : '<span class="status warn">Atención</span> ';
+      messageEl.innerHTML = badge + escapeHtml(state.message);
+    } else {
+      messageEl.textContent =
+        "Elige un activo, escribe una cantidad y pulsa Comprar o Vender. Tu cartera se guarda en este navegador.";
+    }
+
+    var holdingRows = ["btc", "sol", "ttwo"]
+      .filter(function (id) {
+        return state.portfolio.holdings[id].qty > 0;
+      })
+      .map(function (id) {
+        var holding = state.portfolio.holdings[id];
+        var price = all[id] && all[id].eur;
+        var value = price ? holding.qty * price : null;
+        var pnl = value !== null ? value - holding.qty * holding.avgPriceEur : null;
+        var pnlPct =
+          pnl !== null && holding.avgPriceEur > 0
+            ? (pnl / (holding.qty * holding.avgPriceEur)) * 100
+            : null;
+        return [
+          ASSET_NAME[id],
+          formatQty(id, holding.qty),
+          formatEur(holding.avgPriceEur),
+          price ? formatEur(price) : "—",
+          value !== null ? formatEur(value) : "—",
+          pnl !== null
+            ? { text: formatEur(pnl) + " (" + formatPct(pnlPct) + ")", tone: toneForChange(pnl) }
+            : "—"
+        ];
+      });
+
+    if (holdingRows.length === 0) {
+      el("holdings").innerHTML = '<p class="note">Todavía no has comprado nada. Cuando lo hagas, aparecerá aquí.</p>';
+    } else {
+      el("holdings").innerHTML = renderTable(
+        ["Activo", "Cantidad", "Precio medio de compra", "Precio actual", "Valor", "Ganancia o pérdida"],
+        holdingRows,
+        ["start", "end", "end", "end", "end", "end"]
+      );
+    }
+
+    var historyRows = state.portfolio.trades.map(function (item) {
+      var realized =
+        item.side === "venta" && typeof item.realizedEur === "number"
+          ? { text: formatEur(item.realizedEur), tone: toneForChange(item.realizedEur) }
+          : "—";
+      return [
+        formatMadrid(new Date(item.at), true),
+        item.side === "compra" ? "Compra" : "Venta",
+        ASSET_NAME[item.asset],
+        formatQty(item.asset, item.qty),
+        formatEur(item.priceEur),
+        formatEur(item.amountEur),
+        realized
+      ];
+    });
+
+    if (historyRows.length === 0) {
+      el("history").innerHTML =
+        '<p class="note">Aún no hay operaciones. Tus compras y ventas se irán apuntando aquí.</p>';
+    } else {
+      el("history").innerHTML = renderTable(
+        ["Fecha", "Tipo", "Activo", "Cantidad", "Precio", "Importe", "Resultado"],
+        historyRows,
+        ["start", "start", "start", "end", "end", "end", "end"]
+      );
+    }
+
+    el("footnote").textContent =
+      "Bitcoin y Solana: precios en vivo de CoinGecko. Take-Two Interactive: " +
+      formatUsd(TTWO_SNAPSHOT.usd) +
+      " / " +
+      formatEur(TTWO_SNAPSHOT.eur) +
+      ", consultado el " +
+      formatMadrid(new Date(TTWO_SNAPSHOT.asOfIso), true) +
+      " (hora de Madrid); no es un precio en vivo. Tipo de cambio: 1 $ = " +
+      TTWO_SNAPSHOT.usdPerEur.toLocaleString("es-ES", { minimumFractionDigits: 5 }) +
+      " € (Frankfurter, 18 nov 2026). Esta página es solo para aprender.";
+  }
+
+  function bindEvents() {
+    el("btn-refresh").addEventListener("click", refreshPrices);
+    el("btn-buy").addEventListener("click", function () { trade("compra"); });
+    el("btn-sell").addEventListener("click", function () { trade("venta"); });
+    el("btn-reset").addEventListener("click", resetPortfolio);
+    el("asset").addEventListener("change", function (event) {
+      state.asset = event.target.value;
+    });
+    el("amount").addEventListener("input", function (event) {
+      state.amountText = event.target.value;
+    });
+    el("amount").addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        trade("compra");
+      }
+    });
+  }
+
+  state.portfolio = loadPortfolio();
+  bindEvents();
+  render();
+  loadPrices();
+  loadCharts();
+  setInterval(loadPrices, REFRESH_MS);
+  </script>
+</body>
+</html>
